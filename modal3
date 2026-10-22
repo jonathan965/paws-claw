@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paws & Claws - Catálogo Digital</title>
+  <!-- Tailwind CSS vía CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#F9F6F0] text-stone-800 min-h-screen flex flex-col font-sans">
+
+  <!-- Navbar Superior Fijo -->
+  <header class="fixed top-0 left-0 right-0 z-40 bg-emerald-800 text-white shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-center cursor-pointer" onclick="volverAlCatalogo()">
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">Paws & Claws</h1>
+    </div>
+  </header>
+
+  <!-- 1. VISTA PRINCIPAL DEL CATÁLOGO -->
+  <main id="vista-catalogo" class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16 w-full transition-opacity">
+    
+    <!-- Sección Hero -->
+    <section class="text-center py-8">
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-stone-900 tracking-tight">Catálogo Digital</h2>
+      
+      <!-- Botones de Filtro -->
+      <div id="contenedor-filtros" class="mt-6 flex flex-wrap justify-center gap-3">
+        <button 
+          data-categoria="Todos" 
+          class="btn-filtro bg-pink-300 text-pink-950 font-semibold px-6 py-2 rounded-full shadow-sm transition">
+          Todos
+        </button>
+        <button 
+          data-categoria="Higiene" 
+          class="btn-filtro bg-white text-stone-700 hover:bg-stone-100 border border-stone-200 px-6 py-2 rounded-full shadow-sm transition">
+          Higiene
+        </button>
+        <button 
+          data-categoria="Muebles" 
+          class="btn-filtro bg-white text-stone-700 hover:bg-stone-100 border border-stone-200 px-6 py-2 rounded-full shadow-sm transition">
+          Muebles
+        </button>
+      </div>
+    </section>
+
+    <!-- Grid de Productos Dinámico -->
+    <section class="mt-8">
+      <div id="grid-productos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <!-- Las tarjetas se generan dinámicamente con JavaScript -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 2. VISTA DE DETALLE DE PRODUCTO PANTALLA COMPLETA (Estilo SPA) -->
+  <section id="vista-detalle" class="hidden min-h-screen bg-[#F9F6F0] pt-24 pb-20 w-full">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Botón Superior: Volver al catálogo -->
+      <button 
+        onclick="volverAlCatalogo()" 
+        class="inline-flex items-center gap-2 text-stone-600 hover:text-emerald-800 font-semibold py-2.5 px-4 mb-6 rounded-full bg-white/70 hover:bg-white border border-stone-200 shadow-sm transition group">
+        <span class="text-xl transition-transform group-hover:-translate-x-1">←</span>
+        <span>Volver al catálogo</span>
+      </button>
+
+      <!-- Contenedor Responsivo Móvil vs Escritorio -->
+      <!-- Celular: flex-col (imagen arriba, info abajo) -->
+      <!-- PC: md:flex-row-reverse (información a la izquierda, imagen a la derecha) -->
+      <div class="flex flex-col md:flex-row-reverse md:items-start md:gap-10 lg:gap-12">
+        
+        <!-- Columna de Imagen Grande -->
+        <div class="w-full md:w-1/2 flex-shrink-0 mb-8 md:mb-0">
+          <div class="rounded-3xl overflow-hidden shadow-md border border-stone-200/80 bg-white md:sticky md:top-24">
+            <img 
+              id="detalle-imagen" 
+              src="" 
+              alt="" 
+              class="w-full h-80 sm:h-96 md:h-[480px] object-cover" 
+            />
+          </div>
+        </div>
+
+        <!-- Columna de Información -->
+        <div class="w-full md:w-1/2 flex flex-col">
+          
+          <!-- Categoría -->
+          <span 
+            id="detalle-categoria" 
+            class="inline-block text-xs uppercase tracking-wider text-emerald-800 font-bold bg-emerald-100/70 px-3.5 py-1 rounded-full w-fit mb-3">
+          </span>
+          
+          <!-- Título del Producto -->
+          <h2 id="detalle-titulo" class="text-3xl sm:text-4xl font-extrabold text-stone-900 tracking-tight leading-tight"></h2>
+          
+          <!-- Precio Dinámico -->
+          <p id="detalle-precio" class="text-3xl sm:text-4xl font-extrabold text-stone-900 mt-2 mb-4"></p>
+          
+          <!-- Descripción Detallada -->
+          <div class="border-t border-stone-200/80 pt-4 mb-6">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-stone-500 mb-2">Descripción del Producto</h3>
+            <p id="detalle-descripcion" class="text-stone-700 text-base leading-relaxed"></p>
+          </div>
+
+          <!-- Selector de Tallas y Comparativa de Razas (Solo para Muebles/Camas con tallas) -->
+          <div id="seccion-tallas" class="hidden mb-6 bg-white p-5 sm:p-6 rounded-2xl border border-stone-200 shadow-sm">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-stone-800 mb-3 flex items-center gap-2">
+              <span>📏 Selecciona la Talla:</span>
+            </h3>
+            
+            <!-- Botones Interactivos de Tallas -->
+            <div id="contenedor-botones-tallas" class="flex flex-wrap gap-2.5 mb-4">
+              <!-- Renderizados dinámicamente -->
+            </div>
+
+            <!-- Tarjeta visual de Comparativa de Tamaño / Razas recomendadas -->
+            <div class="bg-stone-50 border border-stone-200 rounded-xl p-4 flex items-start gap-3">
+              <span class="text-2xl flex-shrink-0" aria-hidden="true">🐾</span>
+              <div>
+                <h4 class="text-xs uppercase tracking-wider font-bold text-stone-800">Comparativa de Tamaño & Razas recomendadas</h4>
+                <p id="detalle-raza-info" class="text-stone-600 text-sm mt-1 leading-normal"></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Botón de Pedido por WhatsApp -->
+          <button 
+            id="btn-whatsapp"
+            onclick="pedirPorWhatsApp()" 
+            class="w-full bg-emerald-800 hover:bg-emerald-900 text-white font-semibold py-4 px-6 rounded-2xl transition duration-200 shadow-md text-center flex items-center justify-center gap-2 text-lg active:scale-[0.99]">
+            <span>Pedir por WhatsApp</span>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Botón Flotante y Menú de Redes Sociales (Esquina Inferior Derecha) -->
+  <div class="fixed bottom-6 right-6 z-40 flex flex-col items-center">
+    
+    <!-- Menú Desplegable (Oculto por defecto) -->
+    <div id="menu-redes" class="hidden flex-col gap-3 items-center mb-3">
+      
+      <!-- WhatsApp (Color Oficial #25D366) -->
+      <a 
+        href="https://wa.me/50300000000" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        aria-label="Contactar por WhatsApp"
+        class="w-11 h-11 rounded-full bg-[#25D366] text-white shadow-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-transform duration-200">
+        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+          <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2ZM12.05 20.15C10.56 20.15 9.11 19.76 7.85 19.01L7.55 18.83L4.44 19.65L5.27 16.61L5.07 16.3C4.24 14.98 3.81 13.47 3.81 11.91C3.81 7.37 7.5 3.68 12.05 3.68C14.25 3.68 16.31 4.54 17.87 6.1C19.42 7.66 20.28 9.72 20.27 11.92C20.28 16.46 16.59 20.15 12.05 20.15ZM16.57 14.39C16.32 14.26 15.1 13.66 14.88 13.58C14.65 13.5 14.49 13.46 14.32 13.71C14.16 13.96 13.69 14.51 13.55 14.67C13.4 14.84 13.26 14.86 13.01 14.73C12.76 14.61 11.96 14.34 11.01 13.49C10.27 12.83 9.77 12.02 9.62 11.77C9.48 11.52 9.61 11.39 9.73 11.26C9.84 11.15 9.98 10.97 10.11 10.82C10.23 10.68 10.27 10.57 10.35 10.41C10.43 10.24 10.39 10.1 10.33 9.97C10.27 9.85 9.78 8.65 9.57 8.16C9.37 7.68 9.17 7.74 9.02 7.74C8.88 7.73 8.71 7.73 8.55 7.73C8.38 7.73 8.12 7.79 7.89 8.04C7.66 8.29 7.02 8.89 7.02 10.11C7.02 11.33 7.91 12.5 8.03 12.67C8.16 12.83 9.78 15.33 12.26 16.4C12.85 16.66 13.31 16.81 13.67 16.93C14.26 17.12 14.8 17.09 15.23 17.03C15.71 16.96 16.7 16.43 16.91 15.85C17.12 15.27 17.12 14.78 17.05 14.67C16.99 14.55 16.82 14.51 16.57 14.39Z"/>
+        </svg>
+      </a>
+
+      <!-- Instagram (Degradado Oficial) -->
+      <a 
+        href="https://www.instagram.com/pawsandclaws.sv/" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        aria-label="Visitar Instagram"
+        class="w-11 h-11 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 text-white shadow-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-transform duration-200">
+        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+        </svg>
+      </a>
+
+      <!-- Facebook (Color Oficial #1877F2) -->
+      <a 
+        href="https://facebook.com" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        aria-label="Visitar Facebook"
+        class="w-11 h-11 rounded-full bg-[#1877F2] text-white shadow-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-transform duration-200">
+        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+        </svg>
+      </a>
+
+    </div>
+
+    <!-- Botón Principal con Logo Redondo -->
+    <button 
+      onclick="toggleRedes()" 
+      aria-label="Abrir redes sociales"
+      class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-emerald-800 p-0.5 shadow-2xl hover:scale-105 active:scale-95 transition-all duration-200 border-2 border-white flex items-center justify-center overflow-hidden focus:outline-none">
+      <img 
+        src="icono-logo.jpeg" 
+        alt="Logo Paws & Claws" 
+        class="w-full h-full object-cover rounded-full"
+      />
+    </button>
+
+  </div>
+
+  <!-- LÓGICA DE JAVASCRIPT (El Cerebro) -->
+  <script>
+    // URL de tu Web App de Google Apps Script vinculada a Google Sheets
+    const APPS_SCRIPT_URL = 'PEGA_AQUI_TU_URL_DE_APPS_SCRIPT';
+
+    // Arreglo dinámico de productos y variables de estado
+    let productos = [];
+    let productoActual = null;
+    let tallaSeleccionada = null;
+    let categoriaActual = 'Todos';
+
+    // Elementos del DOM - Vista Catálogo
+    const vistaCatalogo = document.getElementById('vista-catalogo');
+    const gridProductos = document.getElementById('grid-productos');
+    const botonesFiltro = document.querySelectorAll('.btn-filtro');
+
+    // Elementos del DOM - Vista Detalle Pantalla Completa
+    const vistaDetalle = document.getElementById('vista-detalle');
+    const detalleImagen = document.getElementById('detalle-imagen');
+    const detalleCategoria = document.getElementById('detalle-categoria');
+    const detalleTitulo = document.getElementById('detalle-titulo');
+    const detallePrecio = document.getElementById('detalle-precio');
+    const detalleDescripcion = document.getElementById('detalle-descripcion');
+    const seccionTallas = document.getElementById('seccion-tallas');
+    const contenedorBotonesTallas = document.getElementById('contenedor-botones-tallas');
+    const detalleRazaInfo = document.getElementById('detalle-raza-info');
+
+    // 1. Cargar productos desde Google Apps Script (Google Sheets)
+    async function cargarProductos() {
+      // Indicador visual de carga
+      gridProductos.innerHTML = `
+        <div class="col-span-full py-20 text-center text-stone-500">
+          <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-emerald-800 border-t-transparent mb-4"></div>
+          <p class="text-lg font-medium text-stone-700">Cargando catálogo...</p>
+        </div>
+      `;
+
+      try {
+        const respuesta = await fetch(APPS_SCRIPT_URL);
+        const datos = await respuesta.json();
+        productos = Array.isArray(datos) ? datos : (datos.productos || []);
+        renderizarProductos(categoriaActual);
+      } catch (error) {
+        console.error('Error al cargar productos desde Google Sheet:', error);
+        gridProductos.innerHTML = `
+          <div class="col-span-full py-16 text-center text-stone-500 bg-white rounded-2xl border border-stone-200 p-8 shadow-sm">
+            <p class="text-red-600 font-bold text-lg mb-2">No se pudieron cargar los productos</p>
+            <p class="text-stone-600 text-sm max-w-md mx-auto mb-4">
+              Asegúrate de haber configurado tu URL de Google Apps Script y que el Web App esté implementado con acceso público ("Cualquiera").
+            </p>
+            <button 
+              onclick="cargarProductos()" 
+              class="bg-emerald-800 hover:bg-emerald-900 text-white font-medium py-2 px-5 rounded-xl transition text-sm">
+              Reintentar
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    // 2. Renderizar Catálogo de Productos evaluando el campo 'estado'
+    function renderizarProductos(categoriaFiltro = 'Todos') {
+      gridProductos.innerHTML = '';
+
+      const productosFiltrados = (categoriaFiltro === 'Todos')
+        ? productos
+        : productos.filter(p => p.categoria && p.categoria.toString().toLowerCase() === categoriaFiltro.toLowerCase());
+
+      if (productosFiltrados.length === 0) {
+        gridProductos.innerHTML = `
+          <div class="col-span-full py-12 text-center text-stone-500">
+            <p class="text-base font-medium">No hay productos disponibles en esta categoría.</p>
+          </div>
+        `;
+        return;
+      }
+
+      productosFiltrados.forEach(prod => {
+        const tarjeta = document.createElement('article');
+        tarjeta.className = 'bg-white rounded-2xl shadow-sm border border-stone-200/80 overflow-hidden flex flex-col transition hover:shadow-md';
+
+        // Evaluar campo 'estado'
+        const esAgotado = prod.estado && prod.estado.toString().trim().toLowerCase() === 'agotado';
+
+        // Botón y comportamiento según disponibilidad
+        const botonHTML = esAgotado
+          ? `<button 
+              disabled 
+              class="mt-auto w-full bg-gray-400 text-white font-medium py-2.5 px-4 rounded-xl cursor-not-allowed text-center">
+              Agotado
+            </button>`
+          : `<button 
+              onclick="abrirDetalle('${prod.id}')"
+              class="mt-auto w-full bg-emerald-800 hover:bg-emerald-900 text-white font-medium py-2.5 px-4 rounded-xl transition duration-200 text-center">
+              Me interesa
+            </button>`;
+
+        // Imagen con badge si está agotado
+        const imagenHTML = esAgotado
+          ? `<div class="relative h-48 w-full bg-gray-200">
+              <img 
+                src="${prod.imagen || ''}" 
+                alt="${prod.nombre || 'Producto'}" 
+                class="h-48 w-full object-cover opacity-60 grayscale" 
+                loading="lazy"
+              />
+              <span class="absolute top-3 right-3 bg-stone-800/85 text-white text-[11px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                Agotado
+              </span>
+            </div>`
+          : `<img 
+              src="${prod.imagen || ''}" 
+              alt="${prod.nombre || 'Producto'}" 
+              class="h-48 w-full bg-gray-200 object-cover cursor-pointer hover:opacity-95 transition" 
+              onclick="abrirDetalle('${prod.id}')"
+              loading="lazy"
+            />`;
+
+        tarjeta.innerHTML = `
+          <!-- Espacio de Foto -->
+          ${imagenHTML}
+
+          <!-- Información del Producto -->
+          <div class="p-5 flex flex-col flex-grow">
+            <span class="text-xs uppercase tracking-wider text-stone-500 font-medium">${prod.categoria || ''}</span>
+            <h3 class="text-lg font-semibold text-stone-900 mt-1">${prod.nombre || ''}</h3>
+            <p class="text-xl font-bold text-stone-900 mt-2 mb-4">${prod.precio || ''}</p>
+            
+            <!-- Botón según estado -->
+            ${botonHTML}
+          </div>
+        `;
+
+        gridProductos.appendChild(tarjeta);
+      });
+    }
+
+    // 3. Abrir Vista de Detalle Pantalla Completa (SPA)
+    function abrirDetalle(id) {
+      const producto = productos.find(p => String(p.id) === String(id));
+      if (!producto) return;
+
+      // Si el producto está agotado, no abrir detalle
+      if (producto.estado && producto.estado.toString().trim().toLowerCase() === 'agotado') {
+        return;
+      }
+
+      productoActual = producto;
+
+      // Asignar datos básicos usando la imagen del JSON
+      detalleImagen.src = producto.imagen || '';
+      detalleImagen.alt = producto.nombre || '';
+      detalleCategoria.textContent = producto.categoria || '';
+      detalleTitulo.textContent = producto.nombre || '';
+      detalleDescripcion.textContent = producto.descripcion || '';
+
+      // Procesar tallas (admite array o JSON en texto)
+      let listaTallas = producto.tallas;
+      if (typeof listaTallas === 'string') {
+        try {
+          listaTallas = JSON.parse(listaTallas);
+        } catch (e) {
+          listaTallas = null;
+        }
+      }
+
+      // Gestión de Tallas y Comparativa de Razas
+      if (Array.isArray(listaTallas) && listaTallas.length > 0) {
+        productoActual.tallas = listaTallas;
+        seccionTallas.classList.remove('hidden');
+        seleccionarTalla(listaTallas[0]);
+      } else {
+        seccionTallas.classList.add('hidden');
+        tallaSeleccionada = null;
+        detallePrecio.textContent = producto.precio || '';
+      }
+
+      // Ocultar catálogo y mostrar vista de producto completa
+      vistaCatalogo.classList.add('hidden');
+      vistaDetalle.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+
+    // 4. Seleccionar Talla e interactividad
+    function seleccionarTalla(talla) {
+      tallaSeleccionada = talla;
+
+      detallePrecio.textContent = talla.precio;
+      detalleRazaInfo.textContent = talla.raza || '';
+
+      contenedorBotonesTallas.innerHTML = '';
+      productoActual.tallas.forEach(t => {
+        const esActiva = t.nombre === tallaSeleccionada.nombre;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = esActiva
+          ? 'bg-pink-300 text-pink-950 font-bold px-4 py-2 rounded-xl border border-pink-400 shadow-sm transition'
+          : 'bg-white hover:bg-stone-100 text-stone-700 font-medium px-4 py-2 rounded-xl border border-stone-200 shadow-sm transition';
+        
+        btn.innerHTML = `<span>${t.nombre}</span> <span class="text-xs opacity-80 font-normal">(${t.precio})</span>`;
+        btn.onclick = () => seleccionarTalla(t);
+        contenedorBotonesTallas.appendChild(btn);
+      });
+    }
+
+    // 5. Volver a la Vista Principal del Catálogo
+    function volverAlCatalogo() {
+      vistaDetalle.classList.add('hidden');
+      vistaCatalogo.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 6. Mensaje Dinámico de WhatsApp
+    function pedirPorWhatsApp() {
+      if (!productoActual) return;
+
+      let mensaje = '';
+
+      if (tallaSeleccionada) {
+        const precioTexto = tallaSeleccionada.precio.startsWith('$') 
+          ? tallaSeleccionada.precio 
+          : `$${tallaSeleccionada.precio}`;
+        
+        mensaje = `Hola Paws & Claws 🐾. Me interesa comprar el producto: ${productoActual.nombre} en Talla ${tallaSeleccionada.nombre} por ${precioTexto}. ¿Tienen disponibilidad?`;
+      } else {
+        const precioTexto = (productoActual.precio || '').startsWith('$') 
+          ? productoActual.precio 
+          : `$${productoActual.precio}`;
+        
+        mensaje = `Hola Paws & Claws 🐾. Me interesa comprar el producto: ${productoActual.nombre} por ${precioTexto}. ¿Tienen disponibilidad?`;
+      }
+
+      const mensajeCodificado = encodeURIComponent(mensaje);
+      window.open('https://wa.me/50300000000?text=' + mensajeCodificado, '_blank');
+    }
+
+    // 7. Alternar menú de redes flotante
+    function toggleRedes() {
+      const menuRedes = document.getElementById('menu-redes');
+      if (menuRedes.classList.contains('hidden')) {
+        menuRedes.classList.remove('hidden');
+        menuRedes.classList.add('flex');
+      } else {
+        menuRedes.classList.add('hidden');
+        menuRedes.classList.remove('flex');
+      }
+    }
+
+    // 8. Lógica visual de los botones de filtro
+    function actualizarEstiloBotones(botonActivo) {
+      botonesFiltro.forEach(btn => {
+        if (btn === botonActivo) {
+          btn.className = 'btn-filtro bg-pink-300 text-pink-950 font-semibold px-6 py-2 rounded-full shadow-sm transition hover:bg-pink-400';
+        } else {
+          btn.className = 'btn-filtro bg-white text-stone-700 hover:bg-stone-100 border border-stone-200 px-6 py-2 rounded-full shadow-sm transition';
+        }
+      });
+    }
+
+    botonesFiltro.forEach(boton => {
+      boton.addEventListener('click', () => {
+        const categoria = boton.getAttribute('data-categoria');
+        categoriaActual = categoria;
+        actualizarEstiloBotones(boton);
+        renderizarProductos(categoria);
+      });
+    });
+
+    // Iniciar carga de productos desde Google Apps Script
+    cargarProductos();
+  </script>
+
+</body>
+</html>
